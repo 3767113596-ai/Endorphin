@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>内啡肽 | Cyberpunk Personal Site</title>
+    <meta
+      name="description"
+      content="内啡肽的赛博朋克风格个人网站，展示 AI 编程、文章、视频、项目与合作入口。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="letter-glitch-bg" aria-hidden="true">
+      <canvas data-letter-glitch></canvas>
+    </div>
+    <div class="scanline" aria-hidden="true"></div>
+    <header class="site-header">
+      <div class="brand">
+        <a class="brand-name" href="#top" aria-label="返回首页">endorphin</a>
+        <div class="brand-chips" role="group" aria-label="切换网站霓虹颜色">
+          <button class="chip orange" type="button" data-palette="orange" aria-label="切换为橙色"></button>
+          <button class="chip yellow" type="button" data-palette="yellow" aria-label="切换为黄色"></button>
+          <button class="chip lime" type="button" data-palette="lime" aria-label="切换为绿色"></button>
+          <button class="chip cyan" type="button" data-palette="cyan" aria-label="切换为青色"></button>
+          <button class="chip purple" type="button" data-palette="purple" aria-label="切换为紫色"></button>
+          <button class="chip pink" type="button" data-palette="pink" aria-label="切换为粉色"></button>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a href="#top" class="active">首页</a>
+        <a href="#mission">任务</a>
+        <a href="#journal">文章</a>
+        <a href="#video">视频</a>
+      </nav>
+
+      <a class="nav-cta" href="#top">交个朋友</a>
+      <div class="friend-badge" data-profile-card>
+        <div class="lanyard-cord" aria-hidden="true">
+          <span></span>
+          <span></span>
+        </div>
+        <div class="lanyard-clip" aria-hidden="true">
+          <span></span>
+        </div>
+        <div class="profile-shell" data-lanyard-card>
+          <div class="profile-header">
+            <span>PERSONAL PROFILE</span>
+            <small>ID: CYB-2077-0424</small>
+          </div>
+          <div class="profile-body">
+            <div class="profile-photo-frame">
+              <img data-profile-photo src="./assets/portrait-cyberpunk.png" alt="个人资料照片" />
+            </div>
+            <div class="profile-info">
+              <div class="profile-row">
+                <span>昵称 <small>NICKNAME</small></span>
+                <strong data-profile-name>内啡肽</strong>
+              </div>
+              <div class="profile-row">
+                <span>身高 <small>HEIGHT</small></span>
+                <strong><b data-profile-height>180</b> cm</strong>
+              </div>
+              <div class="profile-row">
+                <span>体重 <small>WEIGHT</small></span>
+                <strong><b data-profile-weight>68</b> kg</strong>
+              </div>
+              <div class="profile-row">
+                <span>爱好 <small>HOBBIES</small></span>
+                <strong data-profile-hobbies>编程 / 音乐 / 健身 / 摄影</strong>
+              </div>
+            </div>
+          </div>
+          <div class="profile-actions">
+            <button type="button" data-profile-close>收起</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <h1>
+            <span class="name-mark">内啡肽</span>
+            <span class="hero-line">祝早安</span>
+            <span class="hero-line">午安晚安</span>
+          </h1>
+          <p class="hero-lede" data-hero-lede>
+            我用 AI 编程、内容叙事和个人品牌系统，把脑子里的想法快速做成网站、工具、视频和可以持续更新的数字作品。
+          </p>
+
+          <div class="hero-actions">
+            <a class="button primary" href="#mission">进入任务线</a>
+          </div>
+
+          <div class="status-strip" aria-label="个人状态">
+            <span>STATUS: ONLINE</span>
+            <span>ROLE: AI BUILDER</span>
+            <span>MODE: SHIP FAST</span>
+          </div>
+        </div>
+
+        <div class="hero-stage" data-tilt>
+          <div class="orbit-ring" aria-hidden="true"></div>
+          <figure class="portrait-card">
+            <img
+              class="portrait-image"
+              src="./assets/portrait-cyberpunk.png"
+              alt="内啡肽的赛博朋克个人照片"
+            />
+            <figcaption>
+              <span>PERSONAL AVATAR</span>
+              <strong>CYBER ENDORPHIN</strong>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="quick-tabs" aria-label="站点快速入口">
+        <a href="#mission">
+          <span>01</span>
+          <strong>开放游戏进度</strong>
+        </a>
+        <a href="#journal">
+          <span>02</span>
+          <strong>The Journal</strong>
+        </a>
+        <a href="#video">
+          <span>03</span>
+          <strong>Video Library</strong>
+        </a>
+        <a href="#top">
+          <span>04</span>
+          <strong>AI 编程合作</strong>
+        </a>
+      </section>
+
+      <section class="section mission" id="mission">
+        <div class="section-heading">
+          <p class="eyebrow">MAIN QUEST</p>
+          <h2>地球 Online 开放游戏进度</h2>
+        </div>
+
+        <div class="timeline" data-mission-list></div>
+      </section>
+
+      <section class="section journal" id="journal">
+        <div class="section-heading compact">
+          <p class="eyebrow">LIVE CONTENT FEED</p>
+          <h2>Social <mark>Stream</mark></h2>
+          <p>同步小红书作品与公众号文章，最新内容会实时刷新到这里。</p>
+        </div>
+
+        <div class="feed-console">
+          <div class="feed-toolbar" aria-label="内容来源筛选">
+            <button class="feed-tab active" type="button" data-feed-tab="all">全部</button>
+            <button class="feed-tab" type="button" data-feed-tab="xhs">小红书</button>
+            <button class="feed-tab" type="button" data-feed-tab="wechat">公众号</button>
+            <button class="feed-refresh" type="button" data-feed-refresh>刷新</button>
+            <span class="feed-status" data-feed-status>SYNC READY</span>
+          </div>
+          <div class="feed-list" data-feed-list></div>
+        </div>
+      </section>
+
+      <section class="section video" id="video">
+        <div class="section-heading compact">
+          <p class="eyebrow">STREAMING HALL</p>
+          <h2>Video <mark>Library</mark></h2>
+          <p>实时同步抖音视频，最新发布会自动刷新到这里。</p>
+        </div>
+
+        <div class="video-console">
+          <div class="feed-toolbar" aria-label="视频来源筛选">
+            <button class="feed-tab active" type="button" data-video-tab="all">全部</button>
+            <button class="feed-tab" type="button" data-video-tab="douyin">抖音</button>
+            <button class="feed-refresh" type="button" data-video-refresh>刷新</button>
+            <span class="feed-status" data-video-status>VIDEO SYNC READY</span>
+          </div>
+          <div class="video-grid" data-video-list></div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <span>© 2026 内啡肽</span>
+    </footer>
+
+    <div class="toast" role="status" aria-live="polite">邮箱已复制</div>
+    <script src="./data/site-data.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
