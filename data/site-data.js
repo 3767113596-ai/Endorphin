@@ -13,7 +13,7 @@ window.SITE_DATA = {
     name: "内啡肽",
     lines: ["祝早安", "午安晚安"],
     lede:
-      "我用 AI 编程、内容叙事和个人品牌系统，把脑子里的想法快速做成网站、工具、视频和可以持续更新的数字作品。",
+      "别听世俗的耳语，去看世界的风景",
     status: ["STATUS: ONLINE", "ROLE: AI BUILDER", "MODE: SHIP FAST"],
   },
 
