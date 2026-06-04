@@ -1,0 +1,57 @@
+window.WORKS_DATA = {
+  feedItems: [
+    {
+      source: "xhs",
+      title: "天府绿道好多肌肉男",
+      summary: "",
+      date: "",
+      url: "http://xhslink.com/o/7juOFXz6c8w",
+      cover: "./assets/1.jpg",
+    },
+    {
+      source: "xhs",
+      title: "带着76的爷爷游北京",
+      summary: "",
+      date: "",
+      url: "http://xhslink.com/o/Ax1ZznNxzEs",
+      cover: "./assets/2.jpg",
+    },
+    {
+      source: "xhs",
+      title: "贵阳好吃！",
+      summary: "",
+      date: "",
+      url: "http://xhslink.com/o/8G10aTpP0Bm",
+      cover: "./assets/3.jpg",
+    },
+  ],
+  videoItems: [
+    {
+      source: "douyin",
+      title: "老一辈的信仰",
+      summary: "",
+      date: "",
+      duration: "",
+      url: "https://v.douyin.com/x9a84KUTrfQ/",
+      cover: "./assets/cover-douyin-laoyibei.webp",
+    },
+    {
+      source: "douyin",
+      title: "用凡人结婴打开毕业照",
+      summary: "",
+      date: "",
+      duration: "",
+      url: "https://v.douyin.com/L1dOiULWf4g/",
+      cover: "./assets/4.jpg",
+    },
+    {
+      source: "douyin",
+      title: "遇事不决，可问春风",
+      summary: "",
+      date: "",
+      duration: "",
+      url: "https://v.douyin.com/H0w3KMkhx1c/",
+      cover: "./assets/5.jpg",
+    },
+  ],
+};

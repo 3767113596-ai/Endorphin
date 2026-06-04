@@ -1,12 +1,15 @@
 ﻿const toast = document.querySelector(".toast");
 const letterGlitchCanvas = document.querySelector("[data-letter-glitch]");
+const heroSection = document.querySelector("[data-hero-pointer-root]");
+const heroPointer = document.querySelector("[data-hero-pointer]");
 const tiltStage = document.querySelector("[data-tilt]");
-const tiltCard = document.querySelector(".portrait-card");
+const tiltCard = document.querySelector("[data-avatar-reveal]");
 const paletteButtons = document.querySelectorAll("[data-palette]");
 const navCta = document.querySelector(".nav-cta");
 const friendBadge = document.querySelector(".friend-badge");
 const lanyardCard = document.querySelector("[data-lanyard-card]");
 const profilePhoto = document.querySelector("[data-profile-photo]");
+const profilePlanetId = document.querySelector("[data-profile-id]");
 const profileName = document.querySelector("[data-profile-name]");
 const profileHeight = document.querySelector("[data-profile-height]");
 const profileWeight = document.querySelector("[data-profile-weight]");
@@ -25,7 +28,18 @@ const videoTabs = document.querySelectorAll("[data-video-tab]");
 const videoRefresh = document.querySelector("[data-video-refresh]");
 
 const missionList = document.querySelector("[data-mission-list]");
+const transitionSections = Array.from(document.querySelectorAll(".hero, .section"));
+const storyPages = Array.from(document.querySelectorAll("[data-story-page]"));
+const progressPage = document.querySelector("[data-progress-page]");
+const progressNodes = Array.from(document.querySelectorAll("[data-progress-node]"));
+const progressPanels = Array.from(document.querySelectorAll("[data-progress-panel]"));
+const progressTicks = document.querySelector("[data-progress-ticks]");
+const storyFeed = document.querySelector("[data-story-feed]");
+const storyVideo = document.querySelector("[data-story-video]");
+const scrollPhasePages = Array.from(document.querySelectorAll("[data-scroll-phase]"));
+const splitTextNodes = Array.from(document.querySelectorAll("[data-split-text]"));
 const siteData = window.SITE_DATA || {};
+const worksPath = siteData.worksPath || "./data/works.json";
 const brandName = document.querySelector(".brand-name");
 const profileId = document.querySelector(".profile-header small");
 const heroName = document.querySelector(".name-mark");
@@ -33,12 +47,11 @@ const heroLines = document.querySelectorAll(".hero-line");
 const statusStrip = document.querySelector(".status-strip");
 
 const liveFeedSources = siteData.feedSources || [
-  { source: "xhs", label: "小红书", endpoint: "" },
-  { source: "wechat", label: "公众号", endpoint: "" },
+  { source: "xhs", label: "XHS", endpoint: "" },
 ];
 
 const liveVideoSources = siteData.videoSources || [
-  { source: "douyin", label: "抖音", endpoint: "" },
+  { source: "douyin", label: "VIDEO", endpoint: "" },
 ];
 
 const initLetterGlitch = () => {
@@ -219,14 +232,7 @@ const fallbackFeedItems = siteData.feedItems || [
   {
     source: "xhs",
     title: "AI 编程把个人网站做成开放世界",
-    summary: "最新小红书作品会出现在这里，接入作品接口后自动替换。",
-    date: "LIVE",
-    url: "#top",
-  },
-  {
-    source: "wechat",
-    title: "一人公司的网站系统该怎么搭",
-    summary: "公众号文章接入 RSS 或中转接口后，会按发布时间实时同步。",
+    summary: "",
     date: "LIVE",
     url: "#top",
   },
@@ -275,12 +281,13 @@ let currentFeedItems = fallbackFeedItems;
 let activeVideo = "all";
 let currentVideoItems = fallbackVideoItems;
 let missions = defaultMissions;
+let transitionObserver;
 
 const defaultProfile = siteData.profile || {
+  id: "CYB-2077-0424",
   name: "内啡肽",
   height: "180",
   weight: "68",
-  hobbies: "编程 / 音乐 / 健身 / 摄影",
   photo: "./assets/portrait-cyberpunk.png",
 };
 
@@ -300,6 +307,10 @@ if (profileId && siteData.profile?.id) {
 
 if (heroName && siteData.hero?.name) {
   heroName.textContent = siteData.hero.name;
+}
+
+if (heroName) {
+  heroName.dataset.title = heroName.textContent.trim();
 }
 
 if (siteData.hero?.lines) {
@@ -328,11 +339,36 @@ if (statusStrip && siteData.hero?.status) {
 const getSourceLabel = (sources, source) =>
   sources.find((item) => item.source === source)?.label || "内容";
 
+const renderCoverContent = (item, sources) =>
+  item.cover
+    ? `<img src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.title)}" loading="lazy">`
+    : `<span>${escapeHtml(getSourceLabel(sources, item.source))}</span>`;
+
 const updateStatus = (node, message) => {
   if (node) node.textContent = message;
 };
 
+const prepareTransitionItem = (node, index = 0) => {
+  if (!node || node.dataset.transitionReady === "true") return;
+  node.dataset.transitionReady = "true";
+  node.style.setProperty("--reveal-index", String(index));
+};
+
+const refreshScrollTransitions = () => {
+  const revealItems = [
+    ...document.querySelectorAll(".timeline article"),
+    ...document.querySelectorAll(".feed-card"),
+    ...document.querySelectorAll(".video-grid article"),
+  ];
+
+  revealItems.forEach((item, index) => prepareTransitionItem(item, index % 6));
+
+  if (!transitionObserver) return;
+  [...transitionSections, ...revealItems].forEach((item) => transitionObserver.observe(item));
+};
+
 const renderProfile = () => {
+  if (profilePlanetId) profilePlanetId.textContent = profileData.id;
   if (profileName) profileName.textContent = profileData.name;
   if (profileHeight) profileHeight.textContent = profileData.height;
   if (profileWeight) profileWeight.textContent = profileData.weight;
@@ -345,6 +381,73 @@ renderProfile();
 if (heroLede) {
   heroLede.textContent = heroLedeText;
 }
+
+const splitTextForVerticalReveal = (node, options = {}) => {
+  if (!node || node.dataset.revealReady === "true") return;
+  const text = node.textContent.trim();
+  if (!text) return;
+
+  node.dataset.revealReady = "true";
+  node.setAttribute("aria-label", text);
+  if (node.classList.contains("name-mark")) {
+    node.dataset.title = text;
+  }
+  node.textContent = "";
+
+  Array.from(text).forEach((char, index) => {
+    const wrap = document.createElement("span");
+    wrap.className = "vertical-cut-char";
+    wrap.setAttribute("aria-hidden", "true");
+    wrap.style.setProperty("--char-index", String(index));
+    if (options.reverse) wrap.classList.add("reverse");
+
+    const inner = document.createElement("span");
+    inner.textContent = char;
+    wrap.appendChild(inner);
+    node.appendChild(wrap);
+  });
+};
+
+const initHeroTitleReveal = () => {
+  splitTextForVerticalReveal(heroName, { reverse: false });
+  heroLines.forEach((line, index) => {
+    splitTextForVerticalReveal(line, { reverse: index % 2 === 0 });
+  });
+};
+
+const enhancePillNav = () => {
+  document.querySelectorAll(".nav a").forEach((link, index) => {
+    if (link.dataset.pillReady === "true") return;
+    const label = link.textContent.trim();
+    if (!label) return;
+
+    link.dataset.pillReady = "true";
+    link.style.setProperty("--pill-index", String(index));
+    link.textContent = "";
+
+    const circle = document.createElement("span");
+    circle.className = "hover-circle";
+    circle.setAttribute("aria-hidden", "true");
+
+    const stack = document.createElement("span");
+    stack.className = "label-stack";
+
+    const baseLabel = document.createElement("span");
+    baseLabel.className = "pill-label";
+    baseLabel.textContent = label;
+
+    const hoverLabel = document.createElement("span");
+    hoverLabel.className = "pill-label-hover";
+    hoverLabel.setAttribute("aria-hidden", "true");
+    hoverLabel.textContent = label;
+
+    stack.append(baseLabel, hoverLabel);
+    link.append(circle, stack);
+  });
+};
+
+enhancePillNav();
+initHeroTitleReveal();
 
 const savedPalette = localStorage.getItem("palette") || "pink";
 document.body.dataset.palette = savedPalette;
@@ -496,10 +599,15 @@ const normalizeItems = (payload, source) => {
     summary: item.summary || item.description || item.excerpt || "",
     date: item.date || item.pubDate || item.createdAt || "NEW",
     duration: item.duration || item.length || "",
-    url: item.url || item.link || "#top",
+    url: item.url || item.link || "",
     cover: item.cover || item.coverUrl || item.image || item.thumbnail || "",
   }));
 };
+
+const normalizeWorksCatalog = (payload) => ({
+  feedItems: normalizeItems(payload.feedItems || payload.feeds || []),
+  videoItems: normalizeItems(payload.videoItems || payload.videos || []),
+});
 
 const normalizeRssItems = (text, source) => {
   const doc = new DOMParser().parseFromString(text, "application/xml");
@@ -553,26 +661,71 @@ const loadSourceItems = async (source) => {
   return normalizeItems(JSON.parse(text), source.source);
 };
 
+let worksCatalogPromise;
+let localWorksCatalog = {
+  feedItems: fallbackFeedItems,
+  videoItems: fallbackVideoItems,
+};
+
+const loadWorksCatalog = async () => {
+  if (window.WORKS_DATA) {
+    const nextCatalog = normalizeWorksCatalog(window.WORKS_DATA);
+    localWorksCatalog = {
+      feedItems: nextCatalog.feedItems.length ? nextCatalog.feedItems : fallbackFeedItems,
+      videoItems: nextCatalog.videoItems.length ? nextCatalog.videoItems : fallbackVideoItems,
+    };
+    return localWorksCatalog;
+  }
+
+  if (typeof fetch !== "function") {
+    return localWorksCatalog;
+  }
+
+  if (!worksCatalogPromise) {
+    worksCatalogPromise = fetch(`${worksPath}?t=${Date.now()}`)
+      .then((response) => {
+        if (!response.ok) throw new Error("works");
+        return response.json();
+      })
+      .then((payload) => {
+        const nextCatalog = normalizeWorksCatalog(payload);
+        localWorksCatalog = {
+          feedItems: nextCatalog.feedItems.length ? nextCatalog.feedItems : fallbackFeedItems,
+          videoItems: nextCatalog.videoItems.length ? nextCatalog.videoItems : fallbackVideoItems,
+        };
+      })
+      .catch(() => {
+        localWorksCatalog = {
+          feedItems: fallbackFeedItems,
+          videoItems: fallbackVideoItems,
+        };
+      });
+  }
+
+  await worksCatalogPromise;
+  return localWorksCatalog;
+};
+
 const loadRemoteItems = async (sources, fallbackItems, setItems, render, statusNode) => {
   const connectedSources = sources.filter((source) => source.endpoint);
   if (connectedSources.length === 0) {
     setItems(fallbackItems);
-    updateStatus(statusNode, "WAITING FOR API");
+    updateStatus(statusNode, "");
     render();
     return;
   }
 
-  updateStatus(statusNode, "SYNCING...");
+  updateStatus(statusNode, "");
   try {
     const responses = await Promise.all(
       connectedSources.map((source) => loadSourceItems(source)),
     );
     setItems(responses.flat());
-    updateStatus(statusNode, `SYNCED ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`);
+    updateStatus(statusNode, "");
     render();
   } catch {
     setItems(fallbackItems);
-    updateStatus(statusNode, "SYNC FAILED");
+    updateStatus(statusNode, "");
     render();
   }
 };
@@ -587,39 +740,41 @@ const renderFeed = () => {
 
   feedList.innerHTML = visibleItems
     .map(
-      (item) => `
-        <article class="feed-card ${item.cover ? "has-cover" : ""}" data-source="${escapeHtml(item.source)}">
-          ${
-            item.cover
-              ? `<figure class="feed-cover"><img src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.title)}" loading="lazy"></figure>`
-              : ""
-          }
-          <span class="feed-source">${escapeHtml(getSourceLabel(liveFeedSources, item.source))}</span>
-          <div>
-            <h3>${escapeHtml(item.title)}</h3>
-            <p>${escapeHtml(item.summary)}</p>
-            <div class="feed-meta">
-              <span>${escapeHtml(item.date)}</span>
-              <span>LIVE SYNC</span>
-            </div>
-          </div>
-          <a class="feed-open" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer" aria-label="打开内容">→</a>
+      (item) => {
+        const hasUrl = Boolean(item.url);
+        return `
+        <article class="feed-card" data-source="${escapeHtml(item.source)}">
+          <${hasUrl ? "a" : "div"} class="feed-card-link ${hasUrl ? "" : "disabled"}" ${
+            hasUrl ? `href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer"` : ""
+          } aria-label="${escapeHtml(item.title)}">
+            <figure class="feed-cover">
+              ${renderCoverContent(item, liveFeedSources)}
+            </figure>
+            <h3 title="${escapeHtml(item.title)}">${escapeHtml(truncateText(item.title, 10))}</h3>
+          </${hasUrl ? "a" : "div"}>
         </article>
-      `,
+      `;
+      },
     )
     .join("");
+  refreshScrollTransitions();
 };
 
-const loadLiveFeed = () =>
-  loadRemoteItems(
+const loadLiveFeed = async () => {
+  const worksCatalog = await loadWorksCatalog();
+  return loadRemoteItems(
     liveFeedSources,
-    fallbackFeedItems,
+    worksCatalog.feedItems,
     (items) => {
       currentFeedItems = items;
     },
-    renderFeed,
+    () => {
+      renderFeed();
+      renderStoryShowcases();
+    },
     feedStatus,
   );
+};
 
 feedTabs.forEach((button) => {
   button.addEventListener("click", () => {
@@ -643,34 +798,104 @@ const renderVideos = () => {
 
   videoList.innerHTML = visibleItems
     .map(
-      (item) => `
+      (item) => {
+        const hasUrl = Boolean(item.url);
+        return `
         <article data-source="${escapeHtml(item.source)}">
-          <a class="video-card-link" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer" aria-label="${escapeHtml(item.title)}">
+          <${hasUrl ? "a" : "div"} class="video-card-link ${hasUrl ? "" : "disabled"}" ${
+            hasUrl ? `href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer"` : ""
+          } aria-label="${escapeHtml(item.title)}">
             <div class="thumb">
               ${
                 item.cover
                   ? `<img class="video-cover" src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.title)}" loading="lazy">`
-                  : escapeHtml(getSourceLabel(liveVideoSources, item.source))
+                  : `<span>${escapeHtml(getSourceLabel(liveVideoSources, item.source))}</span>`
               }
             </div>
             <h3 title="${escapeHtml(item.title)}">${escapeHtml(truncateText(item.title, 10))}</h3>
-          </a>
+          </${hasUrl ? "a" : "div"}>
         </article>
-      `,
+      `;
+      },
     )
     .join("");
+  refreshScrollTransitions();
 };
 
-const loadLiveVideos = () =>
-  loadRemoteItems(
+const renderStoryShowcases = () => {
+  if (storyFeed) {
+    const xhsItems = currentFeedItems.filter((item) => item.source === "xhs").slice(0, 3);
+    storyFeed.innerHTML = xhsItems
+      .map((item, index) => {
+        const hasUrl = Boolean(item.url);
+        return `
+          <article class="story-work-card" data-flip-card style="--card-index: ${index}">
+            <${hasUrl ? "a" : "div"} class="story-work-link ${hasUrl ? "" : "disabled"}" ${
+              hasUrl ? `href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer"` : ""
+            } aria-label="${escapeHtml(item.title)}">
+              <span class="story-work-inner">
+                <span class="story-work-face story-work-front">
+                  <img src="${escapeHtml(item.cover || "./assets/cyber-long-cover.png")}" alt="${escapeHtml(item.title)}" loading="lazy">
+                  <h3>${escapeHtml(truncateText(item.title, 10))}</h3>
+                </span>
+                <span class="story-work-face story-work-back">
+                  <small>PROFILE 0${index + 1}</small>
+                  <strong>${escapeHtml(truncateText(item.title, 10))}</strong>
+                  <em>OPEN FILE</em>
+                </span>
+              </span>
+            </${hasUrl ? "a" : "div"}>
+          </article>
+        `;
+      })
+      .join("");
+  }
+
+  if (storyVideo) {
+    storyVideo.innerHTML = currentVideoItems
+      .slice(0, 3)
+      .map((item, index) => {
+        const hasUrl = Boolean(item.url);
+        return `
+          <article class="story-video-item" style="--video-index: ${index}">
+            <div class="story-video-info">
+              <span>0${index + 1}</span>
+              <h3>${escapeHtml(truncateText(item.title, 10))}</h3>
+              <p>${escapeHtml(item.summary || "Cyber stream archive")}</p>
+            </div>
+            <${hasUrl ? "a" : "div"} class="story-video-cover ${hasUrl ? "" : "disabled"}" ${
+              hasUrl ? `href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer"` : ""
+            } aria-label="${escapeHtml(item.title)}">
+              ${
+                item.cover
+                  ? `<img src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.title)}" loading="lazy">`
+                  : `<span>${escapeHtml(truncateText(item.title, 10))}</span>`
+              }
+            </${hasUrl ? "a" : "div"}>
+          </article>
+        `;
+      })
+      .join("");
+  }
+
+  window.requestAnimationFrame(updateStoryTimelines);
+};
+
+const loadLiveVideos = async () => {
+  const worksCatalog = await loadWorksCatalog();
+  return loadRemoteItems(
     liveVideoSources,
-    fallbackVideoItems,
+    worksCatalog.videoItems,
     (items) => {
       currentVideoItems = items;
     },
-    renderVideos,
+    () => {
+      renderVideos();
+      renderStoryShowcases();
+    },
     videoStatus,
   );
+};
 
 videoTabs.forEach((button) => {
   button.addEventListener("click", () => {
@@ -698,6 +923,7 @@ const renderMissions = () => {
       `,
     )
     .join("");
+  refreshScrollTransitions();
 };
 
 document.querySelectorAll("[data-copy]").forEach((button) => {
@@ -714,30 +940,363 @@ document.querySelectorAll("[data-copy]").forEach((button) => {
   });
 });
 
-if (tiltStage && tiltCard) {
-  tiltStage.addEventListener("pointermove", (event) => {
-    const rect = tiltStage.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width;
-    const y = (event.clientY - rect.top) / rect.height;
-    const rotateY = (x - 0.5) * 18;
-    const rotateX = (0.5 - y) * 14;
+if (heroSection && tiltStage && tiltCard) {
+  const clamp01 = (value) => Math.max(0, Math.min(1, value));
+  let isHeroDragging = false;
+  let heroPointerTimer;
 
-    tiltCard.style.setProperty("--rx", `${rotateX.toFixed(2)}deg`);
-    tiltCard.style.setProperty("--ry", `${rotateY.toFixed(2)}deg`);
-    tiltCard.style.setProperty("--mx", `${(x * 100).toFixed(1)}%`);
-    tiltCard.style.setProperty("--my", `${(y * 100).toFixed(1)}%`);
-  });
-
-  tiltStage.addEventListener("pointerleave", () => {
+  const resetTiltCard = () => {
     tiltCard.style.setProperty("--rx", "0deg");
     tiltCard.style.setProperty("--ry", "0deg");
-    tiltCard.style.setProperty("--mx", "52%");
-    tiltCard.style.setProperty("--my", "42%");
+    tiltCard.style.setProperty("--card-scale", "1");
+    tiltCard.style.setProperty("--reveal-opacity", "0");
+    tiltCard.style.setProperty("--reveal-size", "clamp(150px, 18vw, 250px)");
+    tiltCard.setAttribute("aria-pressed", "false");
+  };
+
+  const setHeroPointerState = (event, options = {}) => {
+    const heroRect = heroSection.getBoundingClientRect();
+    const heroX = clamp01((event.clientX - heroRect.left) / heroRect.width);
+    const heroY = clamp01((event.clientY - heroRect.top) / heroRect.height);
+    const dragStrength = options.dragging ? 1 : 0;
+
+    heroSection.style.setProperty("--hero-mx", `${(heroX * 100).toFixed(2)}%`);
+    heroSection.style.setProperty("--hero-my", `${(heroY * 100).toFixed(2)}%`);
+    heroSection.style.setProperty("--hero-nx", (heroX - 0.5).toFixed(3));
+    heroSection.style.setProperty("--hero-ny", (heroY - 0.5).toFixed(3));
+    heroSection.style.setProperty("--hero-drag", dragStrength.toString());
+    heroSection.style.setProperty("--hero-pointer-opacity", "1");
+    heroSection.classList.add("is-pointer-active");
+    heroSection.classList.toggle("is-dragging", options.dragging === true);
+
+    if (heroPointer) {
+      heroPointer.style.setProperty("--hero-mx", `${(heroX * 100).toFixed(2)}%`);
+      heroPointer.style.setProperty("--hero-my", `${(heroY * 100).toFixed(2)}%`);
+    }
+
+    const rect = tiltStage.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left - rect.width / 2;
+    const offsetY = event.clientY - rect.top - rect.height / 2;
+    const x = clamp01((event.clientX - rect.left) / rect.width);
+    const y = clamp01((event.clientY - rect.top) / rect.height);
+    const rotateAmplitude = options.dragging ? 10 : 7;
+    const rotateX = (offsetY / (rect.height / 2)) * -rotateAmplitude;
+    const rotateY = (offsetX / (rect.width / 2)) * rotateAmplitude;
+
+    tiltCard.classList.add("is-hovering");
+    tiltCard.style.setProperty("--rx", `${Math.max(-10, Math.min(10, rotateX)).toFixed(2)}deg`);
+    tiltCard.style.setProperty("--ry", `${Math.max(-10, Math.min(10, rotateY)).toFixed(2)}deg`);
+    tiltCard.style.setProperty("--mx", `${(x * 100).toFixed(1)}%`);
+    tiltCard.style.setProperty("--my", `${(y * 100).toFixed(1)}%`);
+    tiltCard.style.setProperty("--card-scale", options.dragging ? "1.045" : "1.025");
+    tiltCard.style.setProperty(
+      "--reveal-size",
+      options.dragging ? "clamp(210px, 26vw, 360px)" : "clamp(150px, 18vw, 250px)",
+    );
+    tiltCard.style.setProperty("--reveal-opacity", "1");
+  };
+
+  const fadeHeroPointer = (delay = 160) => {
+    window.clearTimeout(heroPointerTimer);
+    heroPointerTimer = window.setTimeout(() => {
+      if (isHeroDragging) return;
+      heroSection.style.setProperty("--hero-pointer-opacity", "0");
+      heroSection.style.setProperty("--hero-drag", "0");
+      heroSection.classList.remove("is-pointer-active", "is-dragging");
+      tiltCard.classList.remove("is-hovering");
+      resetTiltCard();
+    }, delay);
+  };
+
+  heroSection.addEventListener("pointerenter", (event) => {
+    window.clearTimeout(heroPointerTimer);
+    setHeroPointerState(event, { dragging: isHeroDragging });
   });
+
+  heroSection.addEventListener("pointermove", (event) => {
+    window.clearTimeout(heroPointerTimer);
+    setHeroPointerState(event, { dragging: isHeroDragging });
+  });
+
+  heroSection.addEventListener("pointerdown", (event) => {
+    isHeroDragging = true;
+    setHeroPointerState(event, { dragging: true });
+    if (event.pointerId !== undefined) {
+      heroSection.setPointerCapture?.(event.pointerId);
+    }
+  });
+
+  heroSection.addEventListener("pointerup", (event) => {
+    isHeroDragging = false;
+    setHeroPointerState(event, { dragging: false });
+    if (event.pointerId !== undefined) {
+      heroSection.releasePointerCapture?.(event.pointerId);
+    }
+    fadeHeroPointer(520);
+  });
+
+  heroSection.addEventListener("pointercancel", () => {
+    isHeroDragging = false;
+    fadeHeroPointer(0);
+  });
+
+  heroSection.addEventListener("pointerleave", () => {
+    if (isHeroDragging) return;
+    fadeHeroPointer(80);
+  });
+
+  tiltCard.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    tiltCard.style.setProperty("--mx", "50%");
+    tiltCard.style.setProperty("--my", "42%");
+    tiltCard.style.setProperty("--reveal-opacity", "1");
+    window.setTimeout(() => tiltCard.style.setProperty("--reveal-opacity", "0"), 700);
+  });
+
+  resetTiltCard();
+}
+
+const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
+
+const mapRange = (value, start, end) => clamp((value - start) / (end - start));
+const easeOutCubic = (value) => 1 - Math.pow(1 - clamp(value), 3);
+const easeInOut = (value) => {
+  const next = clamp(value);
+  return next < 0.5 ? 4 * next * next * next : 1 - Math.pow(-2 * next + 2, 3) / 2;
+};
+
+const getSectionProgress = (section) => {
+  if (!section) return 0;
+  const rect = section.getBoundingClientRect();
+  const viewport = window.innerHeight || document.documentElement.clientHeight;
+  const travel = Math.max(1, rect.height - viewport);
+  if (rect.height <= viewport + 2) {
+    return clamp((viewport * 0.72 - rect.top) / (viewport * 0.82));
+  }
+  return clamp(-rect.top / travel);
+};
+
+const setSplitTextProgress = (node, progress) => {
+  if (!node) return;
+  const eased = easeOutCubic(progress);
+  node.style.setProperty("--text-progress", eased.toFixed(3));
+  node.classList.toggle("is-entered", eased > 0.98);
+};
+
+const splitScrollText = (node) => {
+  if (!node || node.dataset.scrollSplitReady === "true") return;
+  const text = node.textContent.trim();
+  if (!text) return;
+
+  node.dataset.scrollSplitReady = "true";
+  node.setAttribute("aria-label", text);
+  node.textContent = "";
+
+  const outer = document.createElement("span");
+  outer.className = "split-text-line";
+
+  const inner = document.createElement("span");
+  inner.className = "split-text-inner";
+
+  Array.from(text).forEach((char, index) => {
+    const unit = document.createElement("span");
+    unit.className = "split-text-unit";
+    unit.style.setProperty("--unit-index", String(index));
+    unit.textContent = char === " " ? "\u00a0" : char;
+    inner.appendChild(unit);
+  });
+
+  outer.appendChild(inner);
+  node.appendChild(outer);
+  setSplitTextProgress(node, 0);
+};
+
+splitTextNodes.forEach(splitScrollText);
+
+const buildProgressTicks = () => {
+  if (!progressTicks || progressTicks.dataset.ready === "true") return;
+  progressTicks.dataset.ready = "true";
+  progressTicks.innerHTML = Array.from({ length: 48 }, (_, index) => {
+    const top = (index / 47) * 100;
+    return `<span data-progress-tick style="--tick-index: ${index}; --tick-top: ${top.toFixed(3)}%"></span>`;
+  }).join("");
+};
+
+buildProgressTicks();
+
+const updateProgressPage = () => {
+  if (!progressPage) return;
+  const progress = getSectionProgress(progressPage);
+  const titleProgress = mapRange(progress, 0.02, 0.14);
+  const trackProgress = mapRange(progress, 0.12, 0.22);
+  const tickProgress = mapRange(progress, 0.2, 0.92);
+  const tickCount = 48;
+  const activeTick = Math.floor(tickProgress * tickCount);
+
+  progressPage.style.setProperty("--progress", progress.toFixed(3));
+  progressPage.style.setProperty("--title-progress", easeOutCubic(titleProgress).toFixed(3));
+  progressPage.style.setProperty("--track-progress", easeOutCubic(trackProgress).toFixed(3));
+  progressPage.style.setProperty("--tick-progress", tickProgress.toFixed(3));
+  progressPage.style.setProperty("--active-tick", String(activeTick));
+
+  progressTicks?.querySelectorAll("[data-progress-tick]").forEach((tick, index) => {
+    const isActive = index < activeTick;
+    tick.classList.toggle("is-active", isActive);
+    tick.classList.toggle("is-hot", index === activeTick - 1);
+  });
+
+  const thresholds = [0.34, 0.52, 0.7, 0.88];
+  progressNodes.forEach((node, index) => {
+    const nodeStart = thresholds[index];
+    const nodeProgress = mapRange(progress, nodeStart, nodeStart + 0.055);
+    const lineProgress = mapRange(progress, nodeStart + 0.045, nodeStart + 0.095);
+    const panelProgress = mapRange(progress, nodeStart + 0.08, nodeStart + 0.15);
+    const revealed = nodeProgress > 0.08;
+    node.style.setProperty("--node-progress", easeOutCubic(nodeProgress).toFixed(3));
+    node.classList.toggle("is-revealed", revealed);
+    node.classList.toggle("is-complete", progress >= nodeStart + 0.12 && index < thresholds.length - 1);
+
+    const panel = progressPanels[index];
+    if (panel) {
+      panel.style.setProperty("--line-progress", easeInOut(lineProgress).toFixed(3));
+      panel.style.setProperty("--panel-progress", easeOutCubic(panelProgress).toFixed(3));
+      panel.classList.toggle("is-revealed", panelProgress > 0.1);
+    }
+  });
+};
+
+const updateQuotePage = () => {
+  const quotePage = document.querySelector(".quote-page");
+  if (!quotePage) return;
+  const progress = getSectionProgress(quotePage);
+  quotePage.style.setProperty("--quote-progress", progress.toFixed(3));
+  const quoteTexts = Array.from(quotePage.querySelectorAll("[data-split-text]"));
+  quoteTexts.forEach((node, index) => {
+    setSplitTextProgress(node, mapRange(progress, 0.08 + index * 0.13, 0.36 + index * 0.13));
+  });
+};
+
+const updateWorksPage = () => {
+  const worksPage = document.querySelector(".works-page");
+  if (!worksPage) return;
+  const progress = getSectionProgress(worksPage);
+  worksPage.style.setProperty("--works-progress", progress.toFixed(3));
+  worksPage.style.setProperty("--cover-progress", easeOutCubic(mapRange(progress, 0.1, 0.34)).toFixed(3));
+  worksPage.style.setProperty("--split-progress", easeInOut(mapRange(progress, 0.34, 0.56)).toFixed(3));
+  worksPage.style.setProperty("--card-progress", easeOutCubic(mapRange(progress, 0.52, 0.7)).toFixed(3));
+  worksPage.style.setProperty("--flip-progress", easeInOut(mapRange(progress, 0.72, 0.95)).toFixed(3));
+  worksPage.querySelectorAll("[data-split-text]").forEach((node, index) => {
+    setSplitTextProgress(node, mapRange(progress, 0.02 + index * 0.08, 0.24 + index * 0.08));
+  });
+  worksPage.querySelectorAll("[data-flip-card]").forEach((card, index) => {
+    const cardProgress = mapRange(progress, 0.54 + index * 0.045, 0.72 + index * 0.045);
+    const flipProgress = mapRange(progress, 0.74 + index * 0.035, 0.92 + index * 0.035);
+    card.style.setProperty("--card-progress-local", easeOutCubic(cardProgress).toFixed(3));
+    card.style.setProperty("--flip-progress-local", easeInOut(flipProgress).toFixed(3));
+    card.classList.toggle("is-revealed", cardProgress > 0.08);
+    card.classList.toggle("is-flipped", flipProgress > 0.5);
+  });
+};
+
+const updateVideoStoryPage = () => {
+  const videoPage = document.querySelector(".video-story-page");
+  if (!videoPage) return;
+  const progress = getSectionProgress(videoPage);
+  videoPage.style.setProperty("--video-progress", progress.toFixed(3));
+  videoPage.querySelectorAll("[data-split-text]").forEach((node, index) => {
+    setSplitTextProgress(node, mapRange(progress, 0.04 + index * 0.08, 0.28 + index * 0.08));
+  });
+  videoPage.querySelectorAll(".story-video-item").forEach((item, index) => {
+    const itemProgress = mapRange(progress, 0.3 + index * 0.13, 0.56 + index * 0.13);
+    item.style.setProperty("--item-progress", easeOutCubic(itemProgress).toFixed(3));
+    item.classList.toggle("is-revealed", itemProgress > 0.08);
+  });
+};
+
+const updateFuturePage = () => {
+  const futurePage = document.querySelector(".future-page");
+  if (!futurePage) return;
+  const progress = getSectionProgress(futurePage);
+  futurePage.style.setProperty("--future-progress", progress.toFixed(3));
+  futurePage.querySelectorAll("[data-split-text]").forEach((node, index) => {
+    setSplitTextProgress(node, mapRange(progress, 0.1 + index * 0.1, 0.42 + index * 0.1));
+  });
+};
+
+const updateStoryTimelines = () => {
+  updateProgressPage();
+  updateQuotePage();
+  updateWorksPage();
+  updateVideoStoryPage();
+  updateFuturePage();
+  scrollPhasePages.forEach((page) => {
+    page.classList.toggle("is-entered", getSectionProgress(page) > 0.02);
+  });
+};
+
+if (storyPages.length) {
+  const storyObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        entry.target.classList.toggle("is-active", entry.isIntersecting);
+      });
+    },
+    { threshold: 0.56 },
+  );
+  storyPages.forEach((page) => storyObserver.observe(page));
+}
+
+if (transitionSections.length) {
+  transitionSections.forEach((section, index) => {
+    prepareTransitionItem(section, index);
+    section.dataset.transitionSection = "true";
+  });
+
+  transitionObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          entry.target.classList.add("is-revealed");
+        }
+      });
+    },
+    {
+      rootMargin: "0px 0px -12% 0px",
+      threshold: 0.18,
+    },
+  );
+
+  refreshScrollTransitions();
 }
 
 const sections = Array.from(document.querySelectorAll("main section[id]"));
 const navLinks = Array.from(document.querySelectorAll(".nav a"));
+
+navLinks.forEach((link) => {
+  const href = link.getAttribute("href");
+  if (!href?.startsWith("#")) return;
+  link.addEventListener("click", (event) => {
+    const target = document.querySelector(href);
+    if (!target) return;
+    event.preventDefault();
+    window.scrollTo({ top: target.offsetTop, behavior: "smooth" });
+    window.history.replaceState(null, "", href);
+  });
+});
+
+const jumpToCurrentHash = () => {
+  if (!window.location.hash) return;
+  const target = document.querySelector(window.location.hash);
+  if (!target) return;
+  const top = target.offsetTop;
+  document.documentElement.scrollTop = top;
+  document.body.scrollTop = top;
+  window.scrollTo(0, top);
+  setActiveNav();
+  updateStoryTimelines();
+};
 
 const setActiveNav = () => {
   let current;
@@ -753,12 +1312,63 @@ const setActiveNav = () => {
   });
 };
 
+const updateAmbientScroll = () => {
+  const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  document.body.style.setProperty("--scroll-ratio", (window.scrollY / maxScroll).toFixed(4));
+};
+
 renderMissions();
+renderStoryShowcases();
 initLetterGlitch();
 loadLiveFeed();
 loadLiveVideos();
 window.setInterval(loadLiveFeed, 180000);
 window.setInterval(loadLiveVideos, 180000);
-window.addEventListener("scroll", setActiveNav, { passive: true });
+let lastTimelineY = -1;
+let lastTimelineWidth = -1;
+let lastTimelineHeight = -1;
+const tickStoryTimeline = () => {
+  const nextY = window.scrollY;
+  const nextWidth = window.innerWidth;
+  const nextHeight = window.innerHeight;
+  if (nextY !== lastTimelineY || nextWidth !== lastTimelineWidth || nextHeight !== lastTimelineHeight) {
+    lastTimelineY = nextY;
+    lastTimelineWidth = nextWidth;
+    lastTimelineHeight = nextHeight;
+    setActiveNav();
+    updateAmbientScroll();
+    updateStoryTimelines();
+  }
+  window.requestAnimationFrame(tickStoryTimeline);
+};
+window.addEventListener(
+  "scroll",
+  () => {
+    setActiveNav();
+    updateAmbientScroll();
+    updateStoryTimelines();
+  },
+  { passive: true },
+);
 setActiveNav();
+updateAmbientScroll();
+updateStoryTimelines();
+window.requestAnimationFrame(tickStoryTimeline);
+window.addEventListener("resize", updateStoryTimelines);
+
+if (window.location.hash) {
+  window.setTimeout(jumpToCurrentHash, 120);
+  window.setTimeout(jumpToCurrentHash, 420);
+  window.setTimeout(jumpToCurrentHash, 900);
+  window.setTimeout(jumpToCurrentHash, 1400);
+}
+
+window.addEventListener("hashchange", () => {
+  window.setTimeout(jumpToCurrentHash, 0);
+});
+
+window.addEventListener("load", () => {
+  window.setTimeout(jumpToCurrentHash, 0);
+  window.setTimeout(jumpToCurrentHash, 600);
+});
 
