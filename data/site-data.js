@@ -32,7 +32,7 @@ window.SITE_DATA = {
     },
     {
       id: "m-2026-04",
-      date: "2025.04",
+      date: "2026.04",
       title: "Master’s degree exam",
       description: "前路漫漫，仍需上下求索",
     },
