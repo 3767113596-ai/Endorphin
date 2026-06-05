@@ -1326,8 +1326,9 @@ const updateMissionLoading = () => {
 
   const rect = missionSection.getBoundingClientRect();
   const viewport = window.innerHeight || document.documentElement.clientHeight;
-  const travel = Math.max(1, rect.height * 0.88);
-  const progress = Math.max(0, Math.min(1, (viewport * 0.22 - rect.top) / travel));
+  const startTop = Math.min(124, Math.max(94, viewport * 0.11));
+  const availableScroll = Math.max(1, rect.height - viewport * 1.05);
+  const progress = Math.max(0, Math.min(1, (startTop - rect.top) / availableScroll));
   const cards = Array.from(missionList.querySelectorAll("[data-mission-step]"));
 
   missionList.style.setProperty("--mission-progress", progress.toFixed(3));
@@ -1335,10 +1336,10 @@ const updateMissionLoading = () => {
 
   cards.forEach((card, index) => {
     const total = Math.max(1, cards.length);
-    const threshold = total === 1 ? 0.42 : 0.14 + (index / (total - 1)) * 0.72;
-    const nodeProgress = Math.max(0, Math.min(1, (progress - threshold + 0.045) / 0.12));
-    const lineProgress = Math.max(0, Math.min(1, (progress - threshold + 0.015) / 0.12));
-    const cardProgress = Math.max(0, Math.min(1, (progress - threshold - 0.035) / 0.14));
+    const threshold = total === 1 ? 0.42 : 0.12 + (index / (total - 1)) * 0.62;
+    const nodeProgress = Math.max(0, Math.min(1, (progress - threshold + 0.04) / 0.1));
+    const lineProgress = Math.max(0, Math.min(1, (progress - threshold + 0.012) / 0.1));
+    const cardProgress = Math.max(0, Math.min(1, (progress - threshold - 0.025) / 0.11));
 
     card.style.setProperty("--node-progress", nodeProgress.toFixed(3));
     card.style.setProperty("--line-progress", lineProgress.toFixed(3));

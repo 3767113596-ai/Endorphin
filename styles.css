@@ -1979,7 +1979,20 @@ footer {
 
 .mission {
   --page-bg: url("./assets/bg-page-02.png");
-  min-height: 180vh;
+  min-height: 280vh;
+  padding-block: 0;
+  overflow: visible;
+  opacity: 1;
+  transform: none;
+}
+
+.mission-loader-scene {
+  position: sticky;
+  top: clamp(94px, 11vh, 124px);
+  display: grid;
+  align-content: start;
+  min-height: calc(100svh - clamp(94px, 11vh, 124px));
+  padding-block: clamp(18px, 3vw, 34px) clamp(24px, 4vw, 46px);
 }
 
 .journal {
@@ -2040,7 +2053,7 @@ h2 {
   position: relative;
   --mission-progress: 0;
   display: grid;
-  gap: 26px;
+  gap: clamp(18px, 2.5vh, 26px);
   max-width: 980px;
   margin-inline: auto;
   padding-block: 18px;
@@ -3067,6 +3080,25 @@ footer {
     min-height: 0;
   }
 
+  .mission {
+    min-height: 240vh;
+  }
+
+  .mission-loader-scene {
+    top: 132px;
+    min-height: calc(100svh - 132px);
+    padding-block: 16px 26px;
+  }
+
+  .mission .section-heading {
+    margin-bottom: 18px;
+  }
+
+  .mission h2 {
+    font-size: clamp(28px, 9vw, 44px);
+    line-height: 1.08;
+  }
+
   .avatar-layer img {
     object-fit: contain;
     transform: translateZ(0) scale(1);
@@ -3205,19 +3237,33 @@ footer {
   }
 
   .timeline::before {
-    left: 14px;
+    left: 16px;
+  }
+
+  .timeline::after {
+    left: 16px;
   }
 
   .timeline article,
   .timeline article:nth-child(even) {
-    width: calc(100% - 38px);
+    --mission-side: 1;
+    width: calc(100% - 46px);
     justify-self: end;
+  }
+
+  .timeline article::before,
+  .timeline article:nth-child(even)::before,
+  .timeline article:nth-child(odd)::before {
+    left: -42px;
+    right: auto;
+    width: 42px;
+    transform-origin: left;
   }
 
   .timeline article::after,
   .timeline article:nth-child(even)::after,
   .timeline article:nth-child(odd)::after {
-    left: -39px;
+    left: -47px;
     right: auto;
   }
 
