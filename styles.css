@@ -225,11 +225,13 @@ img {
 .brand-name {
   font-size: clamp(24px, 3vw, 34px);
   font-weight: 900;
+  font-style: italic;
   line-height: 1;
   text-shadow:
-    2px 0 0 color-mix(in srgb, var(--cyan) 70%, transparent),
-    -2px 0 0 color-mix(in srgb, var(--pink) 60%, transparent),
-    0 0 18px var(--glow);
+    0 0 10px var(--cyan),
+    3px 0 0 color-mix(in srgb, var(--pink) 75%, transparent),
+    -3px 0 0 color-mix(in srgb, var(--cyan) 75%, transparent),
+    4px 4px 0 var(--black);
 }
 
 .brand-chips {
@@ -899,11 +901,14 @@ main {
 
 .eyebrow {
   margin: 0 0 14px;
-  color: var(--yellow);
+  color: var(--cyan);
   font-size: 13px;
   font-weight: 1000;
-  letter-spacing: 0;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-shadow:
+    0 0 12px color-mix(in srgb, var(--cyan) 82%, transparent),
+    2px 0 0 color-mix(in srgb, var(--pink) 55%, transparent);
 }
 
 h1,
@@ -931,12 +936,18 @@ h1 {
 mark {
   display: inline-block;
   padding: 0 0.12em;
-  background: var(--pink);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--cyan) 92%, var(--white)), color-mix(in srgb, var(--purple) 44%, var(--cyan)));
   color: var(--black);
-  transform: rotate(-2deg);
+  transform: rotate(-2deg) skewX(-6deg);
   box-shadow:
     8px 8px 0 var(--black),
-    0 0 26px color-mix(in srgb, var(--pink) 52%, transparent);
+    -3px 0 0 color-mix(in srgb, var(--pink) 80%, transparent),
+    3px 0 0 color-mix(in srgb, var(--cyan) 80%, transparent),
+    0 0 26px color-mix(in srgb, var(--cyan) 52%, transparent);
+  text-shadow:
+    2px 0 0 color-mix(in srgb, var(--pink) 70%, transparent),
+    -2px 0 0 color-mix(in srgb, var(--cyan) 70%, transparent);
 }
 
 h1 .name-mark {
@@ -944,31 +955,41 @@ h1 .name-mark {
   display: table;
   width: max-content;
   max-width: 100%;
-  margin-bottom: 0.06em;
-  padding: 0.02em 0.18em 0.04em;
-  background: linear-gradient(94deg, #8d3dff 0%, #9538ff 54%, #7c2dff 100%);
-  color: var(--black);
+  margin-bottom: 0.02em;
+  padding: 0 0.1em 0.02em;
+  background:
+    linear-gradient(180deg, rgba(255, 62, 245, 0.2), rgba(124, 60, 255, 0.08)),
+    linear-gradient(94deg, rgba(141, 61, 255, 0.34), rgba(255, 62, 165, 0.18));
+  color: #ff3af6;
+  -webkit-text-stroke: 1px #21f3ff;
+  text-stroke: 1px #21f3ff;
   line-height: 0.95;
-  text-shadow: none;
-  transform: rotate(-1.4deg) skewX(-2deg);
+  text-shadow:
+    4px 0 0 #05131a,
+    8px 5px 0 color-mix(in srgb, var(--cyan) 58%, transparent),
+    -5px -2px 0 color-mix(in srgb, var(--pink) 72%, transparent),
+    0 0 22px color-mix(in srgb, var(--pink) 70%, transparent);
+  transform: rotate(-1.2deg) skewX(-7deg);
   box-shadow:
-    12px 10px 0 rgba(0, 0, 0, 0.56),
-    0 0 24px rgba(124, 60, 255, 0.5),
-    inset 0 0 0 2px rgba(255, 255, 255, 0.08);
-  clip-path: polygon(0.5% 7%, 99% 0, 96.5% 100%, 2.5% 92%);
+    12px 10px 0 rgba(0, 0, 0, 0.5),
+    0 0 26px rgba(255, 62, 245, 0.44),
+    inset 0 -0.08em 0 rgba(0, 229, 255, 0.72);
+  clip-path: polygon(0% 10%, 98% 0, 100% 82%, 94% 100%, 3% 92%);
   isolation: isolate;
 }
 
 h1 .name-mark::before,
 h1 .name-mark::after {
   position: absolute;
-  inset: 0.02em 0.18em 0.04em;
+  inset: 0 0.1em 0.02em;
   z-index: 2;
   content: attr(data-title);
-  color: var(--black);
+  color: #ff3af6;
+  -webkit-text-stroke: 1px #21f3ff;
+  text-stroke: 1px #21f3ff;
   pointer-events: none;
-  opacity: 0;
-  mix-blend-mode: multiply;
+  opacity: 0.2;
+  mix-blend-mode: screen;
 }
 
 h1 .name-mark::before {
@@ -983,7 +1004,7 @@ h1 .name-mark::after {
 
 h1 .name-mark:hover::before,
 h1 .name-mark:hover::after {
-  opacity: 0.78;
+  opacity: 0.72;
   animation: name-fuzzy-slice 0.16s steps(2, end) infinite;
 }
 
@@ -1016,10 +1037,14 @@ h1 .name-mark .vertical-cut-char {
 }
 
 h1 .hero-line .vertical-cut-char > span {
+  color: #f7f7f2;
+  -webkit-text-stroke: 1px #21f3ff;
+  text-stroke: 1px #21f3ff;
   text-shadow:
-    5px 0 0 color-mix(in srgb, var(--cyan) 70%, transparent),
-    -5px 0 0 color-mix(in srgb, var(--pink) 58%, transparent),
-    0 0 28px color-mix(in srgb, var(--cyan) 36%, transparent);
+    5px 0 0 #041113,
+    10px 6px 0 color-mix(in srgb, var(--cyan) 72%, transparent),
+    -6px -2px 0 color-mix(in srgb, var(--pink) 62%, transparent),
+    0 0 28px color-mix(in srgb, var(--cyan) 48%, transparent);
 }
 
 .hero-lede {
@@ -1954,6 +1979,7 @@ footer {
 
 .mission {
   --page-bg: url("./assets/bg-page-02.png");
+  min-height: 180vh;
 }
 
 .journal {
@@ -1988,14 +2014,36 @@ h2 {
   font-size: clamp(34px, 5vw, 72px);
   line-height: 1.02;
   letter-spacing: 0;
+  color: #f7f7f2;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--cyan) 72%, transparent);
+  text-stroke: 1px color-mix(in srgb, var(--cyan) 72%, transparent);
+  text-shadow:
+    4px 0 0 #061015,
+    8px 5px 0 color-mix(in srgb, var(--cyan) 54%, transparent),
+    -5px -2px 0 color-mix(in srgb, var(--pink) 52%, transparent),
+    0 0 26px color-mix(in srgb, var(--cyan) 42%, transparent);
+  transform: skewX(-3deg);
+}
+
+.section-heading.compact h2 {
+  color: var(--white);
+  font-style: italic;
+  text-transform: none;
+  text-shadow:
+    0 0 18px color-mix(in srgb, var(--cyan) 52%, transparent),
+    3px 0 0 color-mix(in srgb, var(--pink) 64%, transparent),
+    -3px 0 0 color-mix(in srgb, var(--cyan) 70%, transparent),
+    5px 5px 0 var(--black);
 }
 
 .timeline {
   position: relative;
+  --mission-progress: 0;
   display: grid;
   gap: 26px;
   max-width: 980px;
   margin-inline: auto;
+  padding-block: 18px;
 }
 
 .mission-toolbar {
@@ -2078,23 +2126,55 @@ h2 {
 
 .timeline::before {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: -18px;
+  bottom: -18px;
   left: 50%;
-  width: 4px;
-  border-left: 4px dashed var(--white);
+  width: 18px;
+  border: 2px solid color-mix(in srgb, var(--white) 72%, var(--cyan));
+  border-radius: 999px;
   content: "";
   transform: translateX(-50%);
-  clip-path: inset(0 0 100% 0);
-  transition: clip-path 1.1s cubic-bezier(0.16, 0.84, 0.24, 1) 0.25s;
+  background:
+    linear-gradient(90deg, transparent 0 40%, rgba(0, 229, 255, 0.28) 46% 54%, transparent 60%),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(247, 247, 242, 0.2) 0 2px,
+      transparent 2px 18px
+    ),
+    rgba(0, 0, 0, 0.72);
+  box-shadow:
+    inset 0 0 24px rgba(0, 229, 255, 0.22),
+    0 0 22px rgba(0, 229, 255, 0.16);
 }
 
-.mission.is-visible .timeline::before {
-  clip-path: inset(0 0 0 0);
+.timeline::after {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 10px;
+  height: calc((100% + 24px) * var(--mission-progress, 0));
+  border-radius: 999px;
+  content: "";
+  transform: translateX(-50%);
+  background:
+    repeating-linear-gradient(
+      135deg,
+      var(--cyan) 0 14px,
+      color-mix(in srgb, var(--cyan) 22%, var(--black)) 14px 28px
+    );
+  box-shadow:
+    0 0 16px var(--cyan),
+    0 0 34px color-mix(in srgb, var(--cyan) 42%, transparent);
+  transition: height 0.08s linear;
+  z-index: 0;
 }
 
 .timeline article {
+  --card-progress: 0;
+  --line-progress: 0;
+  --node-progress: 0;
   position: relative;
+  z-index: 2;
   width: min(46%, 460px);
   border: 3px solid var(--line);
   border-radius: 8px;
@@ -2104,17 +2184,25 @@ h2 {
     var(--panel-dark);
   box-shadow: 8px 8px 0 var(--pink), 0 0 22px color-mix(in srgb, var(--cyan) 18%, transparent);
   backdrop-filter: blur(10px);
-  opacity: 0;
-  transform: translateY(42px) translateX(calc((var(--reveal-index, 0) - 2) * 5px)) scale(0.97);
+  opacity: calc(0.08 + var(--card-progress) * 0.92);
+  clip-path: inset(0 calc((1 - var(--card-progress)) * 100%) 0 0 round 8px);
+  transform:
+    translateY(calc((1 - var(--card-progress)) * 34px))
+    translateX(calc((1 - var(--card-progress)) * (var(--mission-side, -1) * 26px)))
+    scale(calc(0.96 + var(--card-progress) * 0.04));
   transition:
-    opacity 0.58s ease calc(var(--reveal-index, 0) * 0.08s),
-    transform 0.7s cubic-bezier(0.16, 0.84, 0.24, 1) calc(var(--reveal-index, 0) * 0.08s),
+    opacity 0.08s linear,
+    clip-path 0.08s linear,
+    transform 0.08s linear,
     box-shadow 0.18s ease;
 }
 
 .timeline article.is-visible {
-  opacity: 1;
-  transform: translateY(0) translateX(0) scale(1);
+  opacity: calc(0.08 + var(--card-progress) * 0.92);
+  transform:
+    translateY(calc((1 - var(--card-progress)) * 34px))
+    translateX(calc((1 - var(--card-progress)) * (var(--mission-side, -1) * 26px)))
+    scale(calc(0.96 + var(--card-progress) * 0.04));
 }
 
 .timeline article:hover {
@@ -2124,8 +2212,26 @@ h2 {
 }
 
 .timeline article:nth-child(even) {
+  --mission-side: 1;
   justify-self: end;
   box-shadow: 8px 8px 0 var(--cyan);
+}
+
+.timeline article:nth-child(odd) {
+  --mission-side: -1;
+}
+
+.timeline article::before {
+  position: absolute;
+  top: 39px;
+  width: calc(12.3% + 18px);
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--cyan), var(--lime));
+  box-shadow: 0 0 16px var(--cyan);
+  content: "";
+  opacity: var(--line-progress);
+  transform: scaleX(var(--line-progress));
 }
 
 .timeline article::after {
@@ -2135,16 +2241,38 @@ h2 {
   height: 18px;
   border: 4px solid var(--black);
   border-radius: 50%;
-  background: var(--yellow);
+  background: color-mix(in srgb, var(--lime) calc(var(--node-progress) * 100%), var(--black));
   content: "";
+  opacity: calc(0.28 + var(--node-progress) * 0.72);
+  transform: scale(calc(0.74 + var(--node-progress) * 0.34));
+  box-shadow:
+    0 0 calc(var(--node-progress) * 18px) var(--lime),
+    0 0 calc(var(--node-progress) * 34px) color-mix(in srgb, var(--cyan) 44%, transparent);
 }
 
 .timeline article:nth-child(odd)::after {
   right: -12.3%;
 }
 
+.timeline article:nth-child(odd)::before {
+  right: -12.3%;
+  transform-origin: right;
+}
+
 .timeline article:nth-child(even)::after {
   left: -12.3%;
+}
+
+.timeline article:nth-child(even)::before {
+  left: -12.3%;
+  transform-origin: left;
+}
+
+.timeline article.is-unlocked {
+  box-shadow:
+    8px 8px 0 var(--lime),
+    0 0 26px color-mix(in srgb, var(--lime) 28%, transparent),
+    inset 0 0 24px color-mix(in srgb, var(--cyan) 8%, transparent);
 }
 
 .date,

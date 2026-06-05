@@ -914,8 +914,8 @@ const renderMissions = () => {
 
   missionList.innerHTML = missions
     .map(
-      (mission) => `
-        <article data-mission-id="${escapeHtml(mission.id)}">
+      (mission, index) => `
+        <article data-mission-id="${escapeHtml(mission.id)}" data-mission-step="${index}">
           <span class="date">${escapeHtml(mission.date)}</span>
           <h3>${escapeHtml(mission.title)}</h3>
           <p>${escapeHtml(mission.description)}</p>
@@ -924,6 +924,7 @@ const renderMissions = () => {
     )
     .join("");
   refreshScrollTransitions();
+  updateMissionLoading();
 };
 
 document.querySelectorAll("[data-copy]").forEach((button) => {
@@ -1317,6 +1318,35 @@ const updateAmbientScroll = () => {
   document.body.style.setProperty("--scroll-ratio", (window.scrollY / maxScroll).toFixed(4));
 };
 
+const updateMissionLoading = () => {
+  if (!missionList) return;
+
+  const missionSection = missionList.closest(".mission");
+  if (!missionSection) return;
+
+  const rect = missionSection.getBoundingClientRect();
+  const viewport = window.innerHeight || document.documentElement.clientHeight;
+  const travel = Math.max(1, rect.height * 0.88);
+  const progress = Math.max(0, Math.min(1, (viewport * 0.22 - rect.top) / travel));
+  const cards = Array.from(missionList.querySelectorAll("[data-mission-step]"));
+
+  missionList.style.setProperty("--mission-progress", progress.toFixed(3));
+  missionList.style.setProperty("--mission-tick", Math.floor(progress * 36).toString());
+
+  cards.forEach((card, index) => {
+    const total = Math.max(1, cards.length);
+    const threshold = total === 1 ? 0.42 : 0.14 + (index / (total - 1)) * 0.72;
+    const nodeProgress = Math.max(0, Math.min(1, (progress - threshold + 0.045) / 0.12));
+    const lineProgress = Math.max(0, Math.min(1, (progress - threshold + 0.015) / 0.12));
+    const cardProgress = Math.max(0, Math.min(1, (progress - threshold - 0.035) / 0.14));
+
+    card.style.setProperty("--node-progress", nodeProgress.toFixed(3));
+    card.style.setProperty("--line-progress", lineProgress.toFixed(3));
+    card.style.setProperty("--card-progress", cardProgress.toFixed(3));
+    card.classList.toggle("is-unlocked", cardProgress > 0.86);
+  });
+};
+
 renderMissions();
 renderStoryShowcases();
 initLetterGlitch();
@@ -1338,6 +1368,7 @@ const tickStoryTimeline = () => {
     setActiveNav();
     updateAmbientScroll();
     updateStoryTimelines();
+    updateMissionLoading();
   }
   window.requestAnimationFrame(tickStoryTimeline);
 };
@@ -1347,14 +1378,19 @@ window.addEventListener(
     setActiveNav();
     updateAmbientScroll();
     updateStoryTimelines();
+    updateMissionLoading();
   },
   { passive: true },
 );
 setActiveNav();
 updateAmbientScroll();
 updateStoryTimelines();
+updateMissionLoading();
 window.requestAnimationFrame(tickStoryTimeline);
-window.addEventListener("resize", updateStoryTimelines);
+window.addEventListener("resize", () => {
+  updateStoryTimelines();
+  updateMissionLoading();
+});
 
 if (window.location.hash) {
   window.setTimeout(jumpToCurrentHash, 120);
