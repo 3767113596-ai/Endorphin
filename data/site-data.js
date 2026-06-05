@@ -18,24 +18,26 @@ window.SITE_DATA = {
   },
 
   missions: [
+      {
+      id: "m-2021",
+      date: "2021",
+      title: "Army life",
+      description: "青春不止师和远方，还有迷彩和钢枪",
+    },
+     {
+      id: "m-2025-06",
+      date: "2025.6",
+      title: "Graduation",
+      description: "有人走向山，有人走向海，都是好风景",
+    },
     {
       id: "m-2026-04",
       date: "2025.04",
-      title: "考研",
+      title: "Master’s degree exam",
       description: "前路漫漫，仍需上下求索",
     },
-    {
-      id: "m-2025-06",
-      date: "2025.6",
-      title: "大学毕业",
-      description: "四年时光匆匆而过，我感受到了青春的美好",
-    },
-    {
-      id: "m-2021",
-      date: "2021",
-      title: "参军入伍",
-      description: "在部队的大熔炉里面锻造自己",
-    },
+   
+  
   ],
 
   feedSources: [
