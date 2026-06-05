@@ -27,7 +27,7 @@ window.SITE_DATA = {
      {
       id: "m-2025-06",
       date: "2025.6",
-      title: "Graduation",
+      title: "Graduation       ",
       description: "有人走向山，有人走向海，都是好风景",
     },
     {
