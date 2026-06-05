@@ -2054,6 +2054,7 @@ h2 {
   --mission-progress: 0;
   display: grid;
   gap: clamp(18px, 2.5vh, 26px);
+  width: min(980px, 100%);
   max-width: 980px;
   margin-inline: auto;
   padding-block: 18px;
@@ -2961,6 +2962,49 @@ footer {
     min-height: 560px;
   }
 
+  .mission-loader-scene {
+    top: clamp(118px, 14vh, 148px);
+    min-height: calc(100svh - clamp(118px, 14vh, 148px));
+  }
+
+  .mission h2 {
+    font-size: clamp(32px, 7vw, 58px);
+    line-height: 1.08;
+  }
+
+  .timeline {
+    width: min(720px, 100%);
+    padding-left: 46px;
+  }
+
+  .timeline::before,
+  .timeline::after {
+    left: 18px;
+  }
+
+  .timeline article,
+  .timeline article:nth-child(even) {
+    --mission-side: 1;
+    width: min(100%, 620px);
+    justify-self: stretch;
+  }
+
+  .timeline article::before,
+  .timeline article:nth-child(even)::before,
+  .timeline article:nth-child(odd)::before {
+    left: -45px;
+    right: auto;
+    width: 45px;
+    transform-origin: left;
+  }
+
+  .timeline article::after,
+  .timeline article:nth-child(even)::after,
+  .timeline article:nth-child(odd)::after {
+    left: -55px;
+    right: auto;
+  }
+
   .game-progress-layout {
     grid-template-columns: minmax(0, 1fr) 110px;
   }
@@ -3237,18 +3281,18 @@ footer {
   }
 
   .timeline::before {
-    left: 16px;
+    left: 18px;
   }
 
   .timeline::after {
-    left: 16px;
+    left: 18px;
   }
 
   .timeline article,
   .timeline article:nth-child(even) {
     --mission-side: 1;
-    width: calc(100% - 46px);
-    justify-self: end;
+    width: 100%;
+    justify-self: stretch;
   }
 
   .timeline article::before,
