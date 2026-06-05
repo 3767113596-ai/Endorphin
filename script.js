@@ -490,6 +490,7 @@ if (navCta && friendBadge) {
 }
 
 if (friendBadge && lanyardCard) {
+  const isCompactProfileViewport = () => window.matchMedia("(max-width: 720px)").matches;
   const lanyard = {
     dragging: false,
     startX: 0,
@@ -538,6 +539,7 @@ if (friendBadge && lanyardCard) {
 
   lanyardCard.addEventListener("pointerdown", (event) => {
     if (event.target.closest("button, input, label, textarea, a")) return;
+    if (isCompactProfileViewport()) return;
     lanyard.dragging = true;
     lanyard.startX = event.clientX - lanyard.x;
     lanyard.startY = event.clientY - lanyard.y;
