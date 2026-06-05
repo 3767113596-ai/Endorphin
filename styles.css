@@ -777,9 +777,10 @@ main {
   z-index: -2;
   content: "";
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.68), rgba(0, 0, 0, 0.25) 52%, rgba(0, 0, 0, 0.55)),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.7)),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.34), rgba(0, 0, 0, 0.08) 52%, rgba(0, 0, 0, 0.24)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.24)),
     var(--page-bg) center / cover no-repeat;
+  filter: brightness(1.14) saturate(1.12);
   transform: scale(1.02);
 }
 
@@ -1922,13 +1923,13 @@ footer {
   min-height: 100%;
   content: "";
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.38) 50%, rgba(0, 0, 0, 0.7)),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.24), rgba(0, 0, 0, 0.12) 38%, rgba(0, 0, 0, 0.7)),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.34), rgba(0, 0, 0, 0.12) 50%, rgba(0, 0, 0, 0.32)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.04) 38%, rgba(0, 0, 0, 0.28)),
     radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--pink) 18%, transparent), transparent 28rem),
     radial-gradient(circle at 82% 18%, color-mix(in srgb, var(--cyan) 18%, transparent), transparent 30rem),
     var(--page-bg) center / cover no-repeat;
   opacity: 0;
-  filter: saturate(1.1) contrast(1.04);
+  filter: brightness(1.16) saturate(1.16) contrast(1.02);
   transform: translateY(44px);
   transition:
     opacity 0.8s ease,
